@@ -3,30 +3,47 @@ import * as PIXI from 'pixi.js';
 import { gsap } from "gsap";
 import { Game } from "./Game";
 import { toJS } from "mobx";
+import { ReelSettings } from "./ReelSettings";
+import { StateMachine } from "./States";
 export class ReelComponent 
 {
 
     private static readonly REEL_ROWS: number = 3;
     private static readonly REEL_COLUMNS: number = 5;
     private _reelSetContainer: PIXI.Container;
+    private _event: Event = new Event("spin_over");
     public reels: PIXI.Container[] = [];
     public isSpinning: boolean = false;
     private _symbolSet: GameSymbol[] = [];
-    constructor(symbolSet: GameSymbol[])
+    private _stateMachine: StateMachine;
+    constructor(symbolSet: GameSymbol[], stateMachine: StateMachine)
     {
         this._reelSetContainer = new PIXI.Container();
+        this._reelSetContainer.x = 200;
+        this._reelSetContainer.y = 150;
         this._symbolSet = symbolSet;
+        this._stateMachine = stateMachine;
     }
 
 
     public initReels()
     {
         this.createStrips();
+        this.createMask();
     }
 
     public getReel()
     {
         return this._reelSetContainer;
+    }
+
+    private createMask()
+    {
+        let symbol = this._symbolSet[0];
+        let container = new PIXI.Container();
+        let rectangle = new PIXI.Graphics().beginFill(0xFF3300).drawRect(0, 0, symbol.width*5, symbol.height*3).endFill();
+        this._reelSetContainer.addChild(rectangle);
+        this._reelSetContainer.mask = rectangle;
     }
 
     private createStrips()
@@ -36,8 +53,7 @@ export class ReelComponent
             let reel = new PIXI.Container();
             reel.name = `reel_${i}`;
             this.reels.push(reel);
-            reel.x = 200 + i * this._symbolSet[0].width;
-            reel.y = 150;
+            reel.x = i * this._symbolSet[0].width;
             for(let j: number = 2; j > -1; j--)
             {
                 let symbol = new PIXI.Sprite(this._symbolSet[this.randomIntFromInterval(0, 7)].texture);
@@ -69,7 +85,7 @@ export class ReelComponent
 
         for(let i: number = 0; i < ReelComponent.REEL_COLUMNS; i++)
         {
-            gsap.delayedCall(0.2+0.3*i, ()=>{
+            gsap.delayedCall(ReelSettings.REEL_DELAY*i, ()=>{
             let reel = this._reelSetContainer.getChildByName(`reel_${i}`) as PIXI.Container;
             let delay: number = 0;
             for(let j: number = 0; j < 3; j++)
@@ -82,7 +98,7 @@ export class ReelComponent
                 }
                 dropDist = symbol.height*2 - symbol.y;
                 this.dropSymbol(dropDist, dropDist-j*symbol.height, delay, symbol, false, i);
-                delay += 0.3;
+                delay += ReelSettings.SYMBOL_DELAY;
             }
             
         })
@@ -96,25 +112,26 @@ export class ReelComponent
         this.isSpinning = true;
         for(let i: number = 0; i < ReelComponent.REEL_COLUMNS; i++)
         {
-            gsap.delayedCall(0.2+0.3*i, ()=>{
+            gsap.delayedCall(ReelSettings.REEL_DELAY*i, ()=>{
                 let reel = this._reelSetContainer.getChildByName(`reel_${i}`) as PIXI.Container;
                 let delay: number = 0;
-                for(let j: number = 0; j < 3; j++)
+                for(let j: number = 0; j < ReelComponent.REEL_ROWS; j++)
                 {
                     let dropDist: number = 0;
                     let symbol = reel.getChildAt(j) as GameSymbol
                     symbol.visible = true;
                     dropDist = 1200 - symbol.y;
                     this.dropSymbol(1200, dropDist, delay, symbol, true, i);
-                    delay += 0.3;
+                    delay += ReelSettings.SYMBOL_DELAY;
                 }
             })
         }
     }
 
-    public dropSymbol(maxDist: number, dropDist: number, delay: number, symbol: GameSymbol, isDrop: boolean = false, column: number)
+    public dropSymbol(maxDist: number, dropDist: number, delay: number, symbol: GameSymbol, areRemoved: boolean = false, column: number)
     {
-        const speed = dropDist/maxDist;
+        let dropPercent = dropDist/maxDist;
+        const speed = dropPercent*ReelSettings.REEL_SPEED;
         symbol.visible = true;
         if(speed ===0)
         {
@@ -124,7 +141,7 @@ export class ReelComponent
         {
             gsap.delayedCall(delay, ()=>{
                 gsap.to(symbol, {duration: speed, y: symbol.y + dropDist, onComplete:()=>{
-                    if(isDrop)
+                    if(areRemoved)
                     {
                         if(symbol.parent.children.length === 1 && column === 4)
                         {
@@ -140,13 +157,13 @@ export class ReelComponent
                         symbol.visible = false;
                         symbol.destroy();
                     }
-                    if(!isDrop)
+                    if(!areRemoved)
                     {
                         //if we're not dropping and we are at the last symbol then the spin is complete. Move onto winPresentation or whatever next.
                         if(symbol === symbol.parent.getChildAt(2) && column === 4)
                         {
                             this.isSpinning = false;
-
+                            this._stateMachine.setState(StateMachine.IDLE_STATE);
                             //add a state change here? If we get round to doing a stateMachine e.g REELS_IDLE
                         }
                     }
@@ -155,7 +172,7 @@ export class ReelComponent
         }
         else{
             gsap.to(symbol, {duration: speed, y: symbol.y + dropDist, onComplete:()=>{
-                if(isDrop)
+                if(areRemoved)
                 {
                     symbol.parent.removeChild(symbol);
                     symbol.visible = false;

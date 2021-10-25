@@ -9,6 +9,7 @@ export class Button extends PIXI.Container
     private _disabledState: PIXI.DisplayObject | undefined;
     private _pressedState: PIXI.DisplayObject | undefined;
     private _currentSprite: PIXI.DisplayObject | undefined;
+    public enabled: boolean = true;
     public constructor()
     {
         super();
@@ -22,22 +23,26 @@ export class Button extends PIXI.Container
 
     protected _onButtonDown(e: interaction.InteractionEvent)
     {
+        if(this.enabled)
         this.showState("_pressed");
     }
 
     protected _onButtonHover(e: interaction.InteractionEvent)
     {
+        if(this.enabled)
         this.showState("_hover");
         //this.emit("buttonover")
     }
 
     protected _onButtonOut(e: interaction.InteractionEvent)
     {
+        if(this.enabled)
         this.showState("_normal");
     }
 
     protected _onButtonUp(e: interaction.InteractionEvent)
     {
+        if(this.enabled)
         this.showState("_disabled");
     }
 
@@ -90,6 +95,14 @@ export class Button extends PIXI.Container
             if(this._normalState)
             this._normalState.visible = false;
         }
+    }
+
+    public setEnabled(enable: boolean)
+    {
+        this.enabled = enable;
+        this.interactive = enable;
+        this.buttonMode = enable;
+        this.showState("_disabled");
     }
 
 
