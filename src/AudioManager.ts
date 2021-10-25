@@ -1,5 +1,8 @@
 import { Howl } from "howler"
-
+/**
+ * AudioManager
+ * Handles all audio in game
+ */
 export class AudioManager
 {
     private sounds: Map<string, Howl> = new Map();

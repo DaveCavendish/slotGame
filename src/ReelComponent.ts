@@ -6,11 +6,15 @@ import { ReelSettings } from "./ReelSettings";
 import { StateMachine } from "./States";
 import { gsap } from "gsap";
 import { AudioManager } from "./AudioManager";
+/**
+ * ReelComponent
+ * initialises the reels and handles the spinning in/out
+ */
 export class ReelComponent 
 {
 
-    private static readonly REEL_ROWS: number = 3;
-    private static readonly REEL_COLUMNS: number = 5;
+    public static readonly REEL_ROWS: number = 3;
+    public static readonly REEL_COLUMNS: number = 5;
     private _reelSetContainer: PIXI.Container;
     private _event: Event = new Event("spin_over");
     public reels: PIXI.Container[] = [];
@@ -29,27 +33,28 @@ export class ReelComponent
     }
 
 
-    public initReels()
+    public initReels(): void
     {
         this.createStrips();
         this.createMask();
     }
 
-    public getReel()
+    public getReel(): PIXI.Container
     {
         return this._reelSetContainer;
     }
 
-    private createMask()
+    //creates the reel mask
+    private createMask(): void
     {
         let symbol = this._symbolSet[0];
-        let container = new PIXI.Container();
         let rectangle = new PIXI.Graphics().beginFill(0xFF3300).drawRect(0, 0, symbol.width*5, symbol.height*3).endFill();
         this._reelSetContainer.addChild(rectangle);
         this._reelSetContainer.mask = rectangle;
     }
 
-    private createStrips()
+    //create initial reel picture
+    private createStrips(): void
     {
         for(let i: number = 0; i < ReelComponent.REEL_COLUMNS; i++)
         {
@@ -69,7 +74,7 @@ export class ReelComponent
         }
     }
 
-    public recreateStrips()
+    public recreateStrips(): void
     {
         for(let i: number = 0; i < ReelComponent.REEL_COLUMNS; i++)
         {
@@ -84,8 +89,8 @@ export class ReelComponent
             }
         } 
     }
-
-    public dropReelsIn()
+    //drops the new reels in from above.
+    public dropReelsIn(): void
     {
 
         for(let i: number = 0; i < ReelComponent.REEL_COLUMNS; i++)
@@ -108,11 +113,9 @@ export class ReelComponent
             
         })
     }
-
-    //reels now finished dropping? End game.
     }
-
-    public dropReelsOut()
+    //drops the reels below the reel picture
+    public dropReelsOut(): void
     {
         this.isSpinning = true;
         for(let i: number = 0; i < ReelComponent.REEL_COLUMNS; i++)
@@ -133,14 +136,15 @@ export class ReelComponent
         }
     }
 
-    public dropSymbol(maxDist: number, dropDist: number, delay: number, symbol: GameSymbol, areRemoved: boolean = false, column: number)
+    public dropSymbol(maxDist: number, dropDist: number, delay: number, symbol: GameSymbol, areRemoved: boolean = false, column: number): void
     {
         let dropPercent = dropDist/maxDist;
         const speed = dropPercent*ReelSettings.REEL_SPEED;
         symbol.visible = true;
-        if(speed ===0)
+        if(speed === 0)
         {
-            console.log("Dave:" + speed);         
+            console.error("speed is: " + speed, "cannot move with 0 speed.")
+            return;     
         }
         if(delay)
         {
@@ -193,17 +197,37 @@ export class ReelComponent
         }
     }
 
-    public getReelSymbols(reel: number)
+    public getReelSymbols(reel: number): PIXI.DisplayObject[]
     {
-        return this.reels[0].children;
+        return this.reels[reel].children;
     }
 
-    public getIndependentReel(reel: number)
+    public reelHasSymbol(reel: number, symbolId: string)
+    {
+        let bool: boolean = false;
+        if(!this.reels[reel].children)
+        {
+            return false;
+        }
+        this.reels[reel].children.forEach(symbol => {
+            if(symbol instanceof GameSymbol)
+            {
+                if(symbol.symbolId === symbolId)
+                {
+                    bool = true;
+                }
+            }
+        });
+        return bool;
+    }
+
+    public getIndependentReel(reel: number): PIXI.DisplayObject
     {
         return this.reels[reel];
     }
 
-    private randomIntFromInterval(min: number, max: number) { // min and max included 
+    private randomIntFromInterval(min: number, max: number): number 
+    { // min and max included 
         return Math.floor(Math.random() * (max - min + 1) + min)
       }
 }

@@ -5,6 +5,9 @@ import { ReelComponent } from './reelComponent';
 import { StateMachine } from './States';
 import { GameSymbol } from './symbol';
 import { WinPresentation } from './WinPresentation';
+/**
+ * Game
+ */
 export class Game
 {
 
@@ -39,6 +42,7 @@ export class Game
         await this._reelSetComponent.initReels();
         const reels = this._reelSetComponent.getReel();
         this._stage.addChild(reels);  
+        this._stage.addChild(this._winPresentation);
         this.addEventListeners();
     }
 

@@ -1,4 +1,8 @@
 import * as PIXI from 'pixi.js';
+/**
+ * GameSymbol
+ * Basic symbol class that can be used to create new sprites for reelComponent. Option to set a symbol as a scatter to later be used in WinPResentation.
+ */
 export class GameSymbol extends PIXI.Container
 {
 
@@ -6,7 +10,6 @@ export class GameSymbol extends PIXI.Container
     public height: number = 0;
     public texture: PIXI.Texture;
     private _symbolSprite: PIXI.Sprite;
-
 
     constructor(texture: PIXI.Texture, symbolId: string)
     {
@@ -17,6 +20,16 @@ export class GameSymbol extends PIXI.Container
         this.height = this._symbolSprite.height;
         this.texture = texture;
         this.addChild(this._symbolSprite);
+    }
+
+    public set reel(reel: number)
+    {
+        this.reel = reel;
+    }
+
+    public get reel(): number
+    {
+        return this.reel;
     }
 
     public set isScatter(bool: boolean)

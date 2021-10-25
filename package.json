@@ -5,7 +5,7 @@
     "scripts": {
         "dev": "webpack-dev-server -d"
     },
-    "author": "Dave",
+    "author": "Dave Cavendish",
     "license": "-",
     "devDependencies": {
         "@types/howler": "^2.2.4",

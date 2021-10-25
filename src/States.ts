@@ -1,3 +1,7 @@
+/**
+ * StateMachine
+ * Basic stateMachine (ish)! That allows the handling of events and/or state switching.
+ */
 export class StateMachine
 {
     public static readonly IDLE_STATE: string = "IDLE";
