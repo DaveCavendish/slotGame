@@ -23,8 +23,8 @@ export class ReelComponent {
     private _audioManager: AudioManager;
     constructor(symbolSet: GameSymbol[], stateMachine: StateMachine, audioManager: AudioManager) {
         this._reelSetContainer = new PIXI.Container();
-        this._reelSetContainer.x = 200;
-        this._reelSetContainer.y = 150;
+        this._reelSetContainer.x = ReelSettings.REEL_POS_X;
+        this._reelSetContainer.y = ReelSettings.REEL_POS_Y;
         this._symbolSet = symbolSet;
         this._stateMachine = stateMachine;
         this._audioManager = audioManager;
@@ -176,11 +176,6 @@ export class ReelComponent {
             })
         }
     }
-
-    public getReelSymbols(reel: number): PIXI.DisplayObject[] {
-        return this.reels[reel].children;
-    }
-
 
     public getAllSymbols()
     {

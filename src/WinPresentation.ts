@@ -25,14 +25,6 @@ export class WinPresentation extends PIXI.Container {
         this.createWinText("WIN!", "");
     }
 
-    // public parseReels(): void {
-    //     for (let i: number = 0; i < this._reelComponent.reels.length; i++) {
-    //         let symbols = this._reelComponent.getReelSymbols(i);
-    //         this.parseSymbols(symbols as GameSymbol[]);
-    //     }
-    // }
-
-
     public publishWin(): void {
         let delay: number = 0.5;
         this.highlightWinningSymbols();
@@ -94,21 +86,6 @@ export class WinPresentation extends PIXI.Container {
             this.symbolMap.set(`symbol_${i + 1}`, 0);
         }
     }
-
-    protected win()
-    {
-
-    }
-
-    // protected parseSymbols(symbols: GameSymbol[]): void {
-    //     symbols.forEach(symbol => {
-    //         let value = this.symbolMap.get(symbol.symbolId);
-    //         if (value || value === 0) {
-    //             value = value + 1;
-    //             this.symbolMap.set(symbol.symbolId, value);
-    //         }
-    //     });
-    // }
 
     protected createWinText(text: string, valueText: string) {
         this._winLabel = new PIXI.Text(text, this.labelStyle);
