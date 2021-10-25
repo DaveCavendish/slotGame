@@ -15,7 +15,6 @@ export class ReelComponent {
     public static readonly REEL_ROWS: number = 3;
     public static readonly REEL_COLUMNS: number = 5;
     private _reelSetContainer: PIXI.Container;
-    private _event: Event = new Event("spin_over");
     public reels: PIXI.Container[] = [];
     public isSpinning: boolean = false;
     private _symbolSet: GameSymbol[] = [];

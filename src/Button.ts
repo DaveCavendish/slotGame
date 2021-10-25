@@ -11,7 +11,6 @@ export class Button extends PIXI.Container {
     private _hoverState: PIXI.DisplayObject | undefined;
     private _disabledState: PIXI.DisplayObject | undefined;
     private _pressedState: PIXI.DisplayObject | undefined;
-    private _currentSprite: PIXI.DisplayObject | undefined;
     private _spinLabel: PIXI.Text | undefined;
     public enabled: boolean = true;
     public constructor() {
