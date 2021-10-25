@@ -22,7 +22,7 @@ export class WinPresentation extends PIXI.Container {
         for (let i: number = 0; i < WinPresentation.SYMBOLS_TOTAL; i++) {
             this.symbolMap.set(`symbol_${i + 1}`, 0);
         }
-        this.createWinText("WIN!", "4 X SYMBOL_1");
+        this.createWinText("WIN!", "");
     }
 
     public parseReels(): void {
