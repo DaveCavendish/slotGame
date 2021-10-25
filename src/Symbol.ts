@@ -9,6 +9,7 @@ export class GameSymbol extends PIXI.Container {
     public height: number = 0;
     public texture: PIXI.Texture;
     private _symbolSprite: PIXI.Sprite;
+    private _colourMatrix: PIXI.filters.ColorMatrixFilter = new PIXI.filters.ColorMatrixFilter();
 
     constructor(texture: PIXI.Texture, symbolId: string) {
         super();
@@ -18,6 +19,18 @@ export class GameSymbol extends PIXI.Container {
         this.height = this._symbolSprite.height;
         this.texture = texture;
         this.addChild(this._symbolSprite);
+        this.setMask(1);
+    }
+
+    public setMask(num: number)
+    {
+        if(this.filters)
+        {
+            this.filters.pop();
+        }
+        this.filters = [this._colourMatrix];
+        this._colourMatrix.reset();
+        this._colourMatrix.brightness(num, true);
     }
 
     public set reel(reel: number) {

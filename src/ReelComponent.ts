@@ -19,6 +19,7 @@ export class ReelComponent {
     public isSpinning: boolean = false;
     private _symbolSet: GameSymbol[] = [];
     private _stateMachine: StateMachine;
+    private _currentSymbols: GameSymbol[] = [];
     private _audioManager: AudioManager;
     constructor(symbolSet: GameSymbol[], stateMachine: StateMachine, audioManager: AudioManager) {
         this._reelSetContainer = new PIXI.Container();
@@ -66,12 +67,14 @@ export class ReelComponent {
     }
 
     public recreateStrips(): void {
+        this._currentSymbols = [];
         for (let i: number = 0; i < ReelComponent.REEL_COLUMNS; i++) {
             let reel = this._reelSetContainer.getChildAt(i) as PIXI.Container;
             for (let j: number = 0; j < ReelComponent.REEL_ROWS; j++) {
                 let randInt = this.randomIntFromInterval(0, 7);
                 let symbol = new GameSymbol(this._symbolSet[randInt].getTexture(), this._symbolSet[randInt].symbolId);
                 reel.addChild(symbol);
+                this._currentSymbols.push(symbol);
                 symbol.visible = false;
                 symbol.y = -symbol.height;
             }
@@ -176,6 +179,25 @@ export class ReelComponent {
 
     public getReelSymbols(reel: number): PIXI.DisplayObject[] {
         return this.reels[reel].children;
+    }
+
+
+    public getAllSymbols()
+    {
+        return this._currentSymbols;
+    }
+
+    public getSpecificReelSymbols(reel: number, name: string) {
+        let arr: GameSymbol[] = [];
+        for(let i: number = 0; i < this.reels[reel].children.length; i++)
+        {
+            let symbol = this.reels[reel].getChildAt(i) as GameSymbol;
+            if(symbol instanceof GameSymbol && symbol.symbolId === name)
+            {
+                arr.push(symbol);
+            }
+        }
+        return arr;
     }
 
     public reelHasSymbol(reel: number, symbolId: string) {
