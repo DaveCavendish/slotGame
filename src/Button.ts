@@ -1,6 +1,5 @@
 import { interaction } from "pixi.js";
 import * as PIXI from 'pixi.js';
-import { NoEmitOnErrorsPlugin, PrefetchPlugin } from "webpack";
 /**
  * Button
  * Button class that takes all 4 states and handles accordingly.

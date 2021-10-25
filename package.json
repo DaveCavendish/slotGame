@@ -6,7 +6,7 @@
         "dev": "webpack-dev-server -d"
     },
     "author": "Dave Cavendish",
-    "license": "-",
+    "license": "mit",
     "devDependencies": {
         "@types/howler": "^2.2.4",
         "clean-webpack-plugin": "^3.0.0",
