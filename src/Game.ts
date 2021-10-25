@@ -14,7 +14,7 @@ export class Game
     private _winPresentation: WinPresentation | undefined;
     private _button: Button = new Button();
     private _stateMachine: StateMachine;
-    private _audioManager: AudioManager = new AudioManager();
+    private _audioManager: AudioManager;
 
     private readonly renderer: PIXI.Renderer;
     //private _reelSetComponent: ReelComponent;
@@ -25,17 +25,19 @@ export class Game
         this.renderer = renderer;
         this._button.enabled = true;
         this._stateMachine = new StateMachine(this._stage);
+        this._audioManager = new AudioManager(this._stage);
     }
 
     public async init()
     {
-        this.createSymbolSet();
-        this._reelSetComponent = new ReelComponent(this._symbolSet, this._stateMachine);
-        await this._reelSetComponent.initReels();
         this.createButton();
-        const reel = this._reelSetComponent.getReel();
-        this._stage.addChild(reel);  
+        this.createAudioFiles();
+        this.createSymbolSet();
+        this._reelSetComponent = new ReelComponent(this._symbolSet, this._stateMachine, this._audioManager);
         this._winPresentation = new WinPresentation(this._reelSetComponent);
+        await this._reelSetComponent.initReels();
+        const reels = this._reelSetComponent.getReel();
+        this._stage.addChild(reels);  
         this.addEventListeners();
     }
 
@@ -77,7 +79,12 @@ export class Game
     protected createAudioFiles()
     {
 
-        this._audioManager.addSound('onUiClick', 'assets/sounds/Start_button.mp3')
+        this._audioManager.addSound('onUiClick', 'assets/sounds/Start_Button.mp3');
+        this._audioManager.addSound('onReel1Hit', 'assets/sounds/Reel_Stop_1.mp3');
+        this._audioManager.addSound('onReel2Hit', 'assets/sounds/Reel_Stop_2.mp3');
+        this._audioManager.addSound('onReel3Hit', 'assets/sounds/Reel_Stop_3.mp3');
+        this._audioManager.addSound('onReel4Hit', 'assets/sounds/Reel_Stop_4.mp3');
+        this._audioManager.addSound('onReel5Hit', 'assets/sounds/Reel_Stop_5.mp3');
     }
 
     protected createButton()

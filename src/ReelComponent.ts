@@ -4,6 +4,8 @@ import { Game } from "./Game";
 import { toJS } from "mobx";
 import { ReelSettings } from "./ReelSettings";
 import { StateMachine } from "./States";
+import { gsap } from "gsap";
+import { AudioManager } from "./AudioManager";
 export class ReelComponent 
 {
 
@@ -15,13 +17,15 @@ export class ReelComponent
     public isSpinning: boolean = false;
     private _symbolSet: GameSymbol[] = [];
     private _stateMachine: StateMachine;
-    constructor(symbolSet: GameSymbol[], stateMachine: StateMachine)
+    private _audioManager: AudioManager;
+    constructor(symbolSet: GameSymbol[], stateMachine: StateMachine, audioManager: AudioManager)
     {
         this._reelSetContainer = new PIXI.Container();
         this._reelSetContainer.x = 200;
         this._reelSetContainer.y = 150;
         this._symbolSet = symbolSet;
         this._stateMachine = stateMachine;
+        this._audioManager = audioManager;
     }
 
 
@@ -176,6 +180,12 @@ export class ReelComponent
                     symbol.parent.removeChild(symbol);
                     symbol.visible = false;
                     symbol.destroy();
+                }
+                else{
+                    //first symbol landed, play reel sound
+                    if (symbol === symbol.parent.getChildAt(0)) {
+                        this._audioManager.playSound(`onReel${column + 1}Hit`);
+                    }
                 }
             } })
         }

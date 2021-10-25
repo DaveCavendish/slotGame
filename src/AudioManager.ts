@@ -3,8 +3,10 @@ import { Howl } from "howler"
 export class AudioManager
 {
     private sounds: Map<string, Howl> = new Map();
-    public constructor()
+    private _context: PIXI.Container;
+    public constructor(context: PIXI.Container)
     {
+        this._context = context;
     }
 
 
@@ -16,6 +18,14 @@ export class AudioManager
 
     public playSound(name: string)
     {
-        this.sounds.get(name)?.play();
+        if(this.sounds.get(name))
+        {
+            let sound = this.sounds.get(name)
+            if(sound)
+            {
+                sound.play();
+            }
+
+        }
     }
 }

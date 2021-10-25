@@ -9,6 +9,7 @@ export class Button extends PIXI.Container
     private _disabledState: PIXI.DisplayObject | undefined;
     private _pressedState: PIXI.DisplayObject | undefined;
     private _currentSprite: PIXI.DisplayObject | undefined;
+    private _spinLabel: PIXI.Text | undefined;
     public enabled: boolean = true;
     public constructor()
     {
@@ -54,10 +55,10 @@ export class Button extends PIXI.Container
 
     public addLabel(text: string)
     {
-        let label = new PIXI.Text(text);
-        this.addChild(label);
-        label.x = this.width/2 - label.width/2;
-        label.y = this.height/2 - label.height;
+        this._spinLabel = new PIXI.Text(text);
+        this.addChild(this._spinLabel);
+        this._spinLabel.x = this.width/2 - this._spinLabel.width/2;
+        this._spinLabel.y = this.height/2 - this._spinLabel.height;
     }
 
 
@@ -67,7 +68,7 @@ export class Button extends PIXI.Container
         {return;}
         if(child.name.endsWith("_normal")) {this._normalState = child;
         this._normalState.visible = true;}
-        else if(child.name.endsWith("_disabled")) this._disabledState = child;
+        else if(child.name.endsWith("_disabled")) {this._disabledState = child; this._disabledState.alpha = 0.5;} 
         else if(child.name.endsWith("_hover")) this._hoverState = child;
         else if(child.name.endsWith("_pressed")) this._pressedState = child;
     }
@@ -102,7 +103,18 @@ export class Button extends PIXI.Container
         this.enabled = enable;
         this.interactive = enable;
         this.buttonMode = enable;
-        this.showState("_disabled");
+        if(!enable)
+        {
+            this.showState("_disabled");
+            if(this._spinLabel)
+            this._spinLabel.visible = false;
+        }
+        else
+        {
+            this.showState("_normal");
+            if(this._spinLabel)
+            this._spinLabel.visible = true;
+        }
     }
 
 
