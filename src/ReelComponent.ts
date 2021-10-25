@@ -1,6 +1,5 @@
 import { GameSymbol } from "./symbol";
 import * as PIXI from 'pixi.js';
-import { gsap } from "gsap";
 import { Game } from "./Game";
 import { toJS } from "mobx";
 import { ReelSettings } from "./ReelSettings";
