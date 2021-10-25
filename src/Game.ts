@@ -8,8 +8,7 @@ import { WinPresentation } from './WinPresentation';
 /**
  * Game
  */
-export class Game
-{
+export class Game {
 
     private _stage: PIXI.Container;
     private _symbolSet: GameSymbol[] = [];
@@ -23,7 +22,7 @@ export class Game
     //private _reelSetComponent: ReelComponent;
     public static readonly SYMBOLS_LENGTH: number = 8;
 
-    constructor(stage: PIXI.Container, renderer: PIXI.Renderer){
+    constructor(stage: PIXI.Container, renderer: PIXI.Renderer) {
         this._stage = stage;
         this.renderer = renderer;
         this._button.enabled = true;
@@ -31,8 +30,7 @@ export class Game
         this._audioManager = new AudioManager(this._stage);
     }
 
-    public async init()
-    {
+    public async init() {
         this.addBackground();
         this.createButton();
         this.createAudioFiles();
@@ -41,18 +39,16 @@ export class Game
         this._winPresentation = new WinPresentation(this._reelSetComponent, this._stateMachine);
         await this._reelSetComponent.initReels();
         const reels = this._reelSetComponent.getReel();
-        this._stage.addChild(reels);  
+        this._stage.addChild(reels);
         this._stage.addChild(this._winPresentation);
         this.addEventListeners();
     }
 
-    public render()
-    {
+    public render() {
         this.renderer.render(this._stage);
     }
 
-    public addBackground()
-    {
+    public addBackground() {
         let texture = PIXI.Texture.from(`assets/stones.jpg`);
         let background = new PIXI.Sprite(texture);
         background.width = 1920;
@@ -60,22 +56,20 @@ export class Game
         this._stage.addChild(background);
     }
 
-    protected addEventListeners()
-    {
+    protected addEventListeners() {
         //execute this code when IDLE state is entered.
-        this._stage.addListener(StateMachine.IDLE_STATE, ()=>{
+        this._stage.addListener(StateMachine.IDLE_STATE, () => {
             this._button.setEnabled(true);
         })
         //execute this code when SPINNING state is entered
-        this._stage.addListener(StateMachine.SPINNING_STATE, ()=>{
+        this._stage.addListener(StateMachine.SPINNING_STATE, () => {
             this._button.setEnabled(false);
-            if(this._reelSetComponent)
-            {
+            if (this._reelSetComponent) {
                 this._reelSetComponent.dropReelsOut();
             }
         })
 
-        this._stage.addListener(StateMachine.WIN_PRESENTATION, ()=>{
+        this._stage.addListener(StateMachine.WIN_PRESENTATION, () => {
             this._winPresentation?.parseReels();
             this._winPresentation?.publishWin();
         })
@@ -83,19 +77,16 @@ export class Game
         //TO-DO, WIN PRESENTATION?
     }
 
-    protected createSymbolSet()
-    {
+    protected createSymbolSet() {
 
-        for(let i: number = 1; i < Game.SYMBOLS_LENGTH+1; i++)
-        {
+        for (let i: number = 1; i < Game.SYMBOLS_LENGTH + 1; i++) {
             let texture = PIXI.Texture.from(`assets/symbols/symbol_${i}.png`);
             let symbol = new GameSymbol(texture, `symbol_${i}`);
             this._symbolSet.push(symbol);
         }
     }
 
-    protected createAudioFiles()
-    {
+    protected createAudioFiles() {
 
         this._audioManager.addSound('onUiClick', 'assets/sounds/Start_Button.mp3');
         this._audioManager.addSound('onReel1Hit', 'assets/sounds/Reel_Stop_1.mp3');
@@ -105,8 +96,7 @@ export class Game
         this._audioManager.addSound('onReel5Hit', 'assets/sounds/Reel_Stop_5.mp3');
     }
 
-    protected createButton()
-    {
+    protected createButton() {
         let texture = PIXI.Texture.from('assets/ui/btn_spin_disabled.png');
         let texture2 = PIXI.Texture.from('assets/ui/btn_spin_hover.png');
         let texture3 = PIXI.Texture.from('assets/ui/btn_spin_normal.png');
@@ -123,10 +113,8 @@ export class Game
         this._button.on("pointerdown", (e: PIXI.interaction.InteractionEvent): void => this._onButtonDown(e))
     }
 
-    protected _onButtonDown(e: PIXI.interaction.InteractionEvent) 
-    {
-        if(this._reelSetComponent && this._stateMachine.currentState === StateMachine.IDLE_STATE)
-        {
+    protected _onButtonDown(e: PIXI.interaction.InteractionEvent) {
+        if (this._reelSetComponent && this._stateMachine.currentState === StateMachine.IDLE_STATE) {
             this._audioManager.playSound('onUiClick');
             this._stateMachine.setState(StateMachine.SPINNING_STATE);
         }
