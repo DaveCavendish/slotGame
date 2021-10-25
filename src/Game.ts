@@ -64,13 +64,13 @@ export class Game {
         //execute this code when SPINNING state is entered
         this._stage.addListener(StateMachine.SPINNING_STATE, () => {
             this._button.setEnabled(false);
+            this._winPresentation?.reset();
             if (this._reelSetComponent) {
                 this._reelSetComponent.dropReelsOut();
             }
         })
 
         this._stage.addListener(StateMachine.WIN_PRESENTATION, () => {
-            this._winPresentation?.parseReels();
             this._winPresentation?.publishWin();
         })
 

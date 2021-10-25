@@ -5,7 +5,7 @@ import { gsap } from "gsap";
 import * as PIXI from 'pixi.js';
 /**
  * WinPresentation
- * Parses each reel in the window and figures out how many of each symbol have landed.
+ * Parses each reel in the window and figures out how many of each symbol have landed. This is just a simple class that is likely full of bugs, designed to show part of the game flow.
  */
 export class WinPresentation extends PIXI.Container {
     private static readonly SYMBOLS_TOTAL: number = 8;
@@ -25,41 +25,58 @@ export class WinPresentation extends PIXI.Container {
         this.createWinText("WIN!", "");
     }
 
-    public parseReels(): void {
-        for (let i: number = 0; i < this._reelComponent.reels.length; i++) {
-            let symbols = this._reelComponent.getReelSymbols(i);
-            this.parseSymbols(symbols as GameSymbol[]);
-        }
-    }
-
-
     public publishWin(): void {
         let delay: number = 0.5;
-        this.symbolMap.forEach((symbol, string) => {
-            if (symbol >= 3) {
-                //very basic method to see if the symbol has appeared on at least 3 reels
-                if (this._reelComponent.reelHasSymbol(0, string) && this._reelComponent.reelHasSymbol(1, string) && this._reelComponent.reelHasSymbol(2, string)) {
-                    console.log("WINNER");
-                    delay += 1;
-                    this.createWinText("WIN!", symbol + "X " + string.toUpperCase());
-                    if (this._winLabel) {
-                        this._winLabel.alpha = 0;
-                        this._winLabel.visible = true;
-                        gsap.to([this._winLabel, this._winValue], { duration: 0.5, alpha: 1 })
-                    }
-                }
-                //publish win here.
-            }
-        })
+        this.highlightWinningSymbols();
         //short delay before we enable spin again, add 1 second to delay if there is a win
         gsap.delayedCall(delay, () => {
             this.resetSymbolMap();
-            if (this._winLabel)
-                gsap.to([this._winLabel, this._winValue], {
-                    duration: 0.5, alpha: 0, onComplete: () => {
-                        this._stateMachine.setState(StateMachine.IDLE_STATE);
+            this._stateMachine.setState(StateMachine.IDLE_STATE);
+        })
+    }
+
+    protected highlightWinningSymbols() {
+        let isWin: boolean = false;
+        let symbols: GameSymbol[] = [];
+        this.symbolMap.forEach((symbol, string) => {
+            if (this._reelComponent.reelHasSymbol(0, string) && this._reelComponent.reelHasSymbol(1, string) && this._reelComponent.reelHasSymbol(2, string)) {
+                //is a win.
+                isWin = true;
+                symbols.push(...this._reelComponent.getSpecificReelSymbols(0, string))
+                symbols.push(...this._reelComponent.getSpecificReelSymbols(1, string))
+                symbols.push(...this._reelComponent.getSpecificReelSymbols(2, string))
+                if (this._reelComponent.reelHasSymbol(3, string)) {
+                    symbols.push(...this._reelComponent.getSpecificReelSymbols(3, string));
+                    if (this._reelComponent.reelHasSymbol(4, string)) {
+                        symbols.push(...this._reelComponent.getSpecificReelSymbols(4, string));
                     }
+                }
+                this.alphaAllSymbols(0.3);
+                symbols.forEach((symbol) => {
+                    symbol.setMask(1);
                 })
+            }
+        })
+        if (this._winLabel && isWin) {
+            this._winLabel.alpha = 0;
+            this._winLabel.visible = true;
+            gsap.to([this._winLabel], { duration: 0.5, alpha: 1 })
+        }
+    }
+
+    public reset()
+    {
+        this.alphaAllSymbols(1);
+        gsap.to([this._winLabel], {
+            duration: 0.3, alpha: 0
+        })
+    }
+
+    protected alphaAllSymbols(brightness: number)
+    {
+        let symbols = this._reelComponent.getAllSymbols();
+        symbols.forEach((symbol)=>{
+            symbol.setMask(brightness)
         })
     }
 
@@ -68,19 +85,6 @@ export class WinPresentation extends PIXI.Container {
         for (let i: number = 0; i < WinPresentation.SYMBOLS_TOTAL; i++) {
             this.symbolMap.set(`symbol_${i + 1}`, 0);
         }
-    }
-
-    // doesn't work with lines, it works in clusters. If you have 3 or more symbols on the reels you are awarded a win.
-    protected parseSymbols(symbols: GameSymbol[]): void {
-        let hm = this.symbolMap;
-        symbols.forEach(symbol => {
-            let value = this.symbolMap.get(symbol.symbolId);
-            if (value || value === 0) {
-                value = value + 1;
-                this.symbolMap.set(symbol.symbolId, value);
-                console.log(this.symbolMap);
-            }
-        });
     }
 
     protected createWinText(text: string, valueText: string) {
