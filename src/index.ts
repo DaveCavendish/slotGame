@@ -11,6 +11,10 @@ const load = (app: PIXI.Application) => {
         'assets/symbols/symbol_6.png',
         'assets/symbols/symbol_7.png',
         'assets/symbols/symbol_8.png',
+        'assets/ui/btn_spin_disabled.png',
+        'assets/ui/btn_spin_hover.png',
+        'assets/ui/btn_spin_normal.png',
+        'assets/ui/btn_spin_pressed.png',
     ]).load(() => {
             resolve();
         });
@@ -19,19 +23,19 @@ const load = (app: PIXI.Application) => {
 
 const main = async () => {
     // Actual app
-    let app = new PIXI.Application();
-
+    let app = new PIXI.Application({width: 1920, height: 1080, antialias: true, transparent: true, resolution: 1});
     // Display application properly
     document.body.style.margin = '0';
-    app.renderer.view.style.position = 'absolute';
-    app.renderer.view.style.display = 'block';
+   // app.renderer.view.style.position = 'absolute';
+   // app.renderer.view.style.display = 'block';
 
     app.renderer.resize(window.innerWidth, window.innerHeight);
 
     // Load assets
     await load(app);
 
-    let game = new Game(app.stage);
+    let game = new Game(app.stage, app.renderer);
+    game.init();
 
     app.ticker.add((delta)=>{
         update(game, delta)
@@ -42,7 +46,8 @@ const main = async () => {
 };
 
 function update(game: Game, delta: number): void {
-    game.moveImage();
+   game.render();
+  // renderer.render(game.getRenderer());
 };
 
 main();
