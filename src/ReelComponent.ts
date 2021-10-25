@@ -1,7 +1,5 @@
 import { GameSymbol } from "./symbol";
 import * as PIXI from 'pixi.js';
-import { Game } from "./Game";
-import { toJS } from "mobx";
 import { ReelSettings } from "./ReelSettings";
 import { StateMachine } from "./States";
 import { gsap } from "gsap";
@@ -112,6 +110,7 @@ export class ReelComponent {
                     let dropDist: number = 0;
                     let symbol = reel.getChildAt(j) as GameSymbol
                     symbol.visible = true;
+                    //doesn't matter that much what this number is, it just has to be below the screen.
                     dropDist = 1200 - symbol.y;
                     this.dropSymbol(1200, dropDist, delay, symbol, true, i);
                     delay += ReelSettings.SYMBOL_DELAY;
