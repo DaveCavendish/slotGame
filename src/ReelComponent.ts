@@ -59,7 +59,8 @@ export class ReelComponent
             reel.x = i * this._symbolSet[0].width;
             for(let j: number = 2; j > -1; j--)
             {
-                let symbol = new PIXI.Sprite(this._symbolSet[this.randomIntFromInterval(0, 7)].texture);
+                let randInt = this.randomIntFromInterval(0, 7);
+                let symbol = new GameSymbol(this._symbolSet[randInt].getTexture(), this._symbolSet[randInt].symbolId);
                 reel.addChild(symbol);
                 symbol.y += j * symbol.height;
                 symbol.visible = true;
@@ -75,7 +76,8 @@ export class ReelComponent
             let reel = this._reelSetContainer.getChildAt(i) as PIXI.Container;
             for(let j: number = 0; j < ReelComponent.REEL_ROWS; j++)
             {
-                let symbol = new PIXI.Sprite(this._symbolSet[this.randomIntFromInterval(0, 7)].texture);
+                let randInt = this.randomIntFromInterval(0, 7);
+                let symbol = new GameSymbol(this._symbolSet[randInt].getTexture(), this._symbolSet[randInt].symbolId);
                 reel.addChild(symbol);
                 symbol.visible = false;
                 symbol.y = -symbol.height;
@@ -166,7 +168,7 @@ export class ReelComponent
                         if(symbol === symbol.parent.getChildAt(2) && column === 4)
                         {
                             this.isSpinning = false;
-                            this._stateMachine.setState(StateMachine.IDLE_STATE);
+                            this._stateMachine.setState(StateMachine.WIN_PRESENTATION);
                             //add a state change here? If we get round to doing a stateMachine e.g REELS_IDLE
                         }
                     }

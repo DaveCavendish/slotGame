@@ -30,11 +30,12 @@ export class Game
 
     public async init()
     {
+        this.addBackground();
         this.createButton();
         this.createAudioFiles();
         this.createSymbolSet();
         this._reelSetComponent = new ReelComponent(this._symbolSet, this._stateMachine, this._audioManager);
-        this._winPresentation = new WinPresentation(this._reelSetComponent);
+        this._winPresentation = new WinPresentation(this._reelSetComponent, this._stateMachine);
         await this._reelSetComponent.initReels();
         const reels = this._reelSetComponent.getReel();
         this._stage.addChild(reels);  
@@ -44,6 +45,15 @@ export class Game
     public render()
     {
         this.renderer.render(this._stage);
+    }
+
+    public addBackground()
+    {
+        let texture = PIXI.Texture.from(`assets/stones.jpg`);
+        let background = new PIXI.Sprite(texture);
+        background.width = 1920;
+        background.height = 1080;
+        this._stage.addChild(background);
     }
 
     protected addEventListeners()
@@ -61,6 +71,11 @@ export class Game
             }
         })
 
+        this._stage.addListener(StateMachine.WIN_PRESENTATION, ()=>{
+            this._winPresentation?.parseReels();
+            this._winPresentation?.publishWin();
+        })
+
         //TO-DO, WIN PRESENTATION?
     }
 
@@ -70,8 +85,7 @@ export class Game
         for(let i: number = 1; i < Game.SYMBOLS_LENGTH+1; i++)
         {
             let texture = PIXI.Texture.from(`assets/symbols/symbol_${i}.png`);
-            let symbolSprite = new PIXI.Sprite(texture);
-            let symbol = new GameSymbol(symbolSprite, `symbol_${i}`);
+            let symbol = new GameSymbol(texture, `symbol_${i}`);
             this._symbolSet.push(symbol);
         }
     }

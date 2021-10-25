@@ -15,6 +15,7 @@ const load = (app: PIXI.Application) => {
         'assets/ui/btn_spin_hover.png',
         'assets/ui/btn_spin_normal.png',
         'assets/ui/btn_spin_pressed.png',
+        'assets/stones.jpg',
     ]).load(() => {
             resolve();
         });
@@ -26,6 +27,7 @@ const main = async () => {
     let app = new PIXI.Application({width: 1920, height: 1080, antialias: true, transparent: true, resolution: 1});
     // Display application properly
     document.body.style.margin = '0';
+    document.title = "SlotGame"
    // app.renderer.view.style.position = 'absolute';
    // app.renderer.view.style.display = 'block';
 

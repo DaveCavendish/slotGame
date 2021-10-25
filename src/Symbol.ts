@@ -2,25 +2,36 @@ import * as PIXI from 'pixi.js';
 export class GameSymbol extends PIXI.Container
 {
 
-    private _symbolId: String = "";
-    private _symbolSprite: PIXI.Sprite;
+    public symbolId: string = "";
     public height: number = 0;
     public texture: PIXI.Texture;
+    private _symbolSprite: PIXI.Sprite;
 
 
-    constructor(symbolSprite: PIXI.Sprite, symbolId: String)
+    constructor(texture: PIXI.Texture, symbolId: string)
     {
         super();
-        this._symbolSprite = symbolSprite;
-        this._symbolId = symbolId;
-        this.height = symbolSprite.height;
-        this.texture = symbolSprite.texture;
+
+        this._symbolSprite = new PIXI.Sprite(texture);
+        this.symbolId = symbolId;
+        this.height = this._symbolSprite.height;
+        this.texture = texture;
         this.addChild(this._symbolSprite);
     }
 
-    public getSymbolID(): String
+    public set isScatter(bool: boolean)
     {
-        return this._symbolId;
+        this.isScatter = bool;
+    }
+
+    public get isScatter(): boolean
+    {
+        return this.isScatter;
+    }
+
+    public getTexture(): PIXI.Texture
+    {
+        return this.texture;
     }
 
 

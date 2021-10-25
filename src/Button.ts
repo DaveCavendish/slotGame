@@ -1,6 +1,6 @@
 import { interaction } from "pixi.js";
 import * as PIXI from 'pixi.js';
-import { NoEmitOnErrorsPlugin } from "webpack";
+import { NoEmitOnErrorsPlugin, PrefetchPlugin } from "webpack";
 export class Button extends PIXI.Container
 {
 
@@ -55,10 +55,10 @@ export class Button extends PIXI.Container
 
     public addLabel(text: string)
     {
-        this._spinLabel = new PIXI.Text(text);
+        this._spinLabel = new PIXI.Text(text, this.labelStyle);
         this.addChild(this._spinLabel);
-        this._spinLabel.x = this.width/2 - this._spinLabel.width/2;
-        this._spinLabel.y = this.height/2 - this._spinLabel.height;
+        this._spinLabel.x = this.width/2 - this._spinLabel.width/2 + 10;
+        this._spinLabel.y = this.height/2 + 40;
     }
 
 
@@ -140,5 +140,25 @@ export class Button extends PIXI.Container
             break;
 
         }
+    }
+
+
+    protected get labelStyle(): PIXI.TextStyle
+    {
+        return new PIXI.TextStyle({
+            "align": "center",
+            "dropShadow": true,
+            "dropShadowAlpha": 0.8,
+            "dropShadowAngle": 1.5,
+            "dropShadowDistance": 6,
+            "fill": ["white", "#fdea35", "#ff9500"],
+            "fillGradientStops": [0.3, 0.6, 0.9],
+            "fontSize": 45,
+            "stroke": "#240a00",
+            "strokeThickness": 3,
+            "trim": false,
+            "whiteSpace": "pre",
+            "wordWrap": false
+        })
     }
 }

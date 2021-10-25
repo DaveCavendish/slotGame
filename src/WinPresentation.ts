@@ -1,25 +1,26 @@
 import { ReelComponent } from "./reelComponent";
+import { StateMachine } from "./States";
 import { GameSymbol } from "./symbol";
+import { gsap } from "gsap";
 
 export class WinPresentation
 {
-
-    private symbol1: number = 0;
-    private symbol2: number = 0;
-    private symbol3: number = 0;
-    private symbol4: number = 0;
-    private symbol5: number = 0;
-    private symbol6: number = 0;
-    private symbol7: number = 0;
-    private symbol8: number = 0;
+    private static readonly SYMBOLS_TOTAL: number = 8;
+    private symbolMap: Map<string, number> = new Map();
 
     private _reelComponent: ReelComponent;
-    constructor(reelComponent: ReelComponent)
+    private _stateMachine: StateMachine;
+    constructor(reelComponent: ReelComponent, stateMachine: StateMachine)
     {
         this._reelComponent = reelComponent;
+        this._stateMachine = stateMachine;
+        for(let i: number = 0; i < WinPresentation.SYMBOLS_TOTAL; i++)
+        {
+            this.symbolMap.set(`symbol_${i+1}`, 0);
+        }
     }
 
-    public isWin()
+    public parseReels(): void
     {
         for(let i:number = 0; i < this._reelComponent.reels.length; i++)
         {
@@ -28,43 +29,42 @@ export class WinPresentation
         }
     }
 
-    protected parseSymbols(symbols: GameSymbol[])
+
+    public publishWin(): void
+    {
+        this.symbolMap.forEach(symbol => {
+            if(symbol >=3 )
+            {
+                console.log("WINNER");
+                //publish win here.
+            }
+        })
+        //short delay before we enable spin again
+        gsap.delayedCall(0.5, ()=>{
+            this.resetSymbolMap();
+            this._stateMachine.setState(StateMachine.IDLE_STATE);
+        })
+    }
+
+    protected resetSymbolMap(): void
+    {
+        this.symbolMap.clear();
+        for(let i: number = 0; i < WinPresentation.SYMBOLS_TOTAL; i++)
+        {
+            this.symbolMap.set(`symbol_${i+1}`, 0);
+        } 
+    }
+
+    // doesn't work with lines, it works in clusters. If you have 3 or more symbols on the reels you are awarded a win.
+    protected parseSymbols(symbols: GameSymbol[]): void
     {
         symbols.forEach(symbol => {
-            switch(symbol.name)
+            let value = this.symbolMap.get(symbol.symbolId);
+            if (value || value === 0)
             {
-                case "symbol_1":
-                    this.symbol1++;
-                    break;
-                
-                case "symbol_2":
-                    this.symbol2++;
-                    break;
-                
-                case "symbol_3":
-                    this.symbol3++;
-                    break;
-
-                case "symbol_4":
-                    this.symbol4++;
-                    break;
-                
-                case "symbol_5":
-                    this.symbol5++;
-                    break;
-                
-                case "symbol_6":
-                    this.symbol6++;
-                    break;
-
-                case "symbol_7":
-                    this.symbol7++;
-                        break;
-                    
-                case "symbol_8":
-                    this.symbol8++;
-                        break;
-            }     
+                value = value + 1;
+                this.symbolMap.set(symbol.symbolId, value);
+            }
         });
     }
 
